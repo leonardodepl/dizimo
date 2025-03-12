@@ -33,7 +33,7 @@
 
         }
         #fundo {
-            background-image: url("dizimo.jpg");
+            background-image: url("https://i.ibb.co/7dsGCXNL/dizimo.jpg");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center center;  
@@ -134,8 +134,13 @@
         var img = new Image();
         img.src = dataUrl;
         img.onload = function () {
-            document.getElementById("imgRenderizada").innerHTML = "";
-            document.getElementById("imgRenderizada").appendChild(img);
+            //document.getElementById("imgRenderizada").innerHTML = "";
+            //document.getElementById("imgRenderizada").appendChild(img);
+
+            var link = document.createElement('a');
+            link.download = 'dizimo.png';
+            link.href = dataUrl;
+            link.click();
             resolve(); // Apenas retorna quando a imagem estiver carregada
         };
     });
@@ -144,34 +149,7 @@
 document.getElementById("botao").addEventListener("click", async function () {
     await capture(); // Aguarda a imagem ser carregada antes de continuar
 
-    const elemento = document.querySelector("#imgRenderizada img"); // Agora a imagem está garantida
 
-    html2canvas(elemento, {
-        allowTaint: true,
-        useCORS: true,
-        scale: 10,
-    }).then((canvas) => {
-        saveAs(canvas.toDataURL("image/jpeg", 1.0), "dizimo.jpg");
-
-        function saveAs(uri, filename) {
-            var link = document.createElement("a");
-            if (typeof link.download === "string") {
-                link.href = uri;
-                link.download = filename;
-
-                // Firefox requires the link to be in the body
-                document.body.appendChild(link);
-
-                // Simula o clique no link
-                link.click();
-
-                // Remove o link após o download
-                document.body.removeChild(link);
-            } else {
-                window.open(uri);
-            }
-        }
-    });
 });
     </script>
 </body>
