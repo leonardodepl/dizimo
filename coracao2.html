@@ -1,0 +1,172 @@
+<html lang="pt-br">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="html2canvas.js"></script>
+    <script src="html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @font-face {
+            font-family: "fonteArte";
+            src: local("fonteArte"),
+                url("YanoneKaffeesatz-Thin.otf") format("opentype");
+            }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-size:17px;
+        }
+        .container {
+            text-align: center;
+        }
+        .heart {
+           position: relative;
+            width: 689px;
+            height: 641px;
+
+        }
+        #fundo {
+            background-image: url("https://i.ibb.co/7dsGCXNL/dizimo.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;  
+        }
+        .overlay {
+            position: absolute;
+            top: 48%;
+            left: 48%;
+            width: 24px;
+	        height: 24px; 
+	        background: #FF5252;
+	        clip-path: path("M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z");
+	        transform: scale(15);
+	        background: conic-gradient(
+                #4949be var(--percent, 50%), 
+                #a12121 var(--percent, 50%)
+            );
+        }
+        .pagLegenda{ 
+            left:89%;
+            font-size: 17pt;
+        }
+       .pags{
+            position: absolute;
+            font-family: "fonteArte";
+        }
+        #pagantes{top:75%;}
+        #n_pagantes{top:68.8%; }
+        .pagCora{  font-size: 25pt; 
+            color: #fff; 
+           /* font-weight: bold;  */
+           -webkit-text-stroke: 0.2em rgba(0, 0, 0, 0.6);
+         paint-order: stroke fill;
+        }
+        #cora_pagantes{ 
+            top: 36%;
+            left: 55%;
+        }
+        #cora_n_pagantes{ 
+            top: 36%;
+            left: 30%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div id="fundo">
+            <div class="heart">
+                
+                <div class="overlay"></div>
+                <label class="pags pagLegenda" id="pagantes"></label>
+                <label class="pags pagLegenda" id="n_pagantes"></label>
+                <label class="pags pagCora" id="cora_pagantes"></label>
+                <label class="pags pagCora" id="cora_n_pagantes"></label>
+            </div>
+          
+        </div>
+        <div id="imgRenderizada"></div>
+    </div>
+    
+    <br>
+    <label>Percentual de Pagantes  <input type="number" id="vlr_pagos" value="30" min="0" max="100" oninput="atualizarCora()"></label>
+    <button id="botao">Gerar Imagem</button>
+    
+
+    <script>
+        function atualizarCora() {
+          let v1 = parseFloat(document.getElementById('vlr_pagos').value) || 0;
+          let v2 = 100-v1;
+         
+          let total = v1 + v2;
+          let percent = total > 0 ? (v1 / total) * 100 : 50;
+          document.querySelector('.overlay').style.setProperty('--percent', percent + '%');
+          let posicaoPago=36;
+          if (v1<19){
+             posicaoPago=36 - (19-(v1-2));
+          }
+          document.getElementById("cora_pagantes").style.top=posicaoPago+"%";
+          let posicaoNPago=36;
+          if (v2<19){
+             posicaoPago=36 - (19-(v2-2));
+          }
+          document.getElementById("cora_n_pagantes").style.top=posicaoPago+"%";
+
+          document.getElementById('pagantes').innerHTML =v1.toFixed(2).replace(".",",")+"%";
+          document.getElementById('n_pagantes').innerHTML =v2.toFixed(2).replace(".",",")+"%";
+          document.getElementById('cora_pagantes').innerHTML =v1.toFixed(2).replace(".",",")+"%";
+          document.getElementById('cora_n_pagantes').innerHTML =v2.toFixed(2).replace(".",",")+"%";
+        }
+       atualizarCora();
+       function capture() {
+            let node = document.querySelector('#fundo')
+
+            domtoimage.toPng(node)
+            .then(dataUrl => {
+                var img = new Image();
+                img.src = dataUrl;
+                document.body.appendChild(img);
+            })
+        }
+
+        document.getElementById("botao").addEventListener("click", function() {
+            const elemento = document.getElementById("fundo");
+            capture();
+            
+            
+            // html2canvas(document.querySelector("#fundo"),{
+            //     allowTaint: true,
+            //     useCORS: true,
+            //     scale: 8 
+            // }).then(canvas => {
+            // saveAs(canvas.toDataURL('image/jpeg', 1.0), 'dizimo.jpg');
+                
+            //     function saveAs(uri, filename) {
+            //         var link = document.createElement('a');
+            //         if (typeof link.download === 'string') {
+            //             link.href = uri;
+            //             link.download = filename;
+
+            //             //Firefox requires the link to be in the body
+            //             document.body.appendChild(link);
+
+            //             //simulate click
+            //             link.click();
+
+            //             //remove the link when done
+            //             document.body.removeChild(link);
+            //         } else {
+            //          window.open(uri);
+            //         }
+            //     }
+            // });
+        });
+    </script>
+</body>
+</html>
