@@ -123,50 +123,56 @@
           document.getElementById('cora_pagantes').innerHTML =v1.toFixed(2).replace(".",",")+"%";
           document.getElementById('cora_n_pagantes').innerHTML =v2.toFixed(2).replace(".",",")+"%";
         }
-       atualizarCora();
-       function capture() {
-            let node = document.querySelector('#fundo')
+        atualizarCora();
+        async function capture() {
+    let node = document.querySelector("#fundo");
 
-            domtoimage.toPng(node)
-            .then(dataUrl => {
-                var img = new Image();
-                img.src = dataUrl;
-                document.body.appendChild(img);
-            })
+    // Aguarda a conversão para PNG
+    let dataUrl = await domtoimage.toPng(node);
+    
+    return new Promise((resolve) => {
+        var img = new Image();
+        img.src = dataUrl;
+        img.onload = function () {
+            document.getElementById("imgRenderizada").innerHTML = "";
+            document.getElementById("imgRenderizada").appendChild(img);
+            resolve(); // Apenas retorna quando a imagem estiver carregada
+        };
+    });
+}
+
+document.getElementById("botao").addEventListener("click", async function () {
+    await capture(); // Aguarda a imagem ser carregada antes de continuar
+
+    const elemento = document.querySelector("#imgRenderizada img"); // Agora a imagem está garantida
+
+    html2canvas(elemento, {
+        allowTaint: true,
+        useCORS: true,
+        scale: 10,
+    }).then((canvas) => {
+        saveAs(canvas.toDataURL("image/jpeg", 1.0), "dizimo.jpg");
+
+        function saveAs(uri, filename) {
+            var link = document.createElement("a");
+            if (typeof link.download === "string") {
+                link.href = uri;
+                link.download = filename;
+
+                // Firefox requires the link to be in the body
+                document.body.appendChild(link);
+
+                // Simula o clique no link
+                link.click();
+
+                // Remove o link após o download
+                document.body.removeChild(link);
+            } else {
+                window.open(uri);
+            }
         }
-
-        document.getElementById("botao").addEventListener("click", function() {
-            const elemento = document.getElementById("fundo");
-            capture();
-            
-            
-            // html2canvas(document.querySelector("#fundo"),{
-            //     allowTaint: true,
-            //     useCORS: true,
-            //     scale: 8 
-            // }).then(canvas => {
-            // saveAs(canvas.toDataURL('image/jpeg', 1.0), 'dizimo.jpg');
-                
-            //     function saveAs(uri, filename) {
-            //         var link = document.createElement('a');
-            //         if (typeof link.download === 'string') {
-            //             link.href = uri;
-            //             link.download = filename;
-
-            //             //Firefox requires the link to be in the body
-            //             document.body.appendChild(link);
-
-            //             //simulate click
-            //             link.click();
-
-            //             //remove the link when done
-            //             document.body.removeChild(link);
-            //         } else {
-            //          window.open(uri);
-            //         }
-            //     }
-            // });
-        });
+    });
+});
     </script>
 </body>
 </html>
